@@ -1,0 +1,12 @@
+services:
+  syncthing:
+    build:
+      context: bin/syncthing
+    restart: always
+    container_name: docker-syncthing
+    volumes:
+      - ./syncthing_data:/var/syncthing
+      - ./data:/data
+    ports:
+      - "8384:8384"
+      - "22000:22000"
