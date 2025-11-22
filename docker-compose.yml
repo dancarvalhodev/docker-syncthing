@@ -2,11 +2,19 @@ services:
   syncthing:
     build:
       context: bin/syncthing
-    restart: always
     container_name: docker-syncthing
-    volumes:
-      - ./syncthing_data:/var/syncthing
-      - ./data:/data
+    hostname: server-syncthing
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - STGUIADDRESS=0.0.0.0:8384
     ports:
-      - "8384:8384"
-      - "22000:22000"
+      - 8384:8384
+    volumes:
+      - ./data:/var/syncthing
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fkLsS -m 2 127.0.0.1:8384/rest/noauth/health | grep -o --color=never OK || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 3
